@@ -1,0 +1,35 @@
+CREATE TABLE Employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department VARCHAR(50),
+    job_title VARCHAR(50),
+    salary DECIMAL(10,2),
+    bank_account_number VARCHAR(30)
+);
+
+
+INSERT INTO Employees (employee_id, first_name, last_name, department, job_title, salary, bank_account_number)
+VALUES
+(101, 'Maria', 'Santos', 'HR', 'HR Assistant', 25000.00, '123-456-789'),
+(102, 'Juan', 'Dela Cruz', 'IT', 'Software Engineer', 45000.00, '987-654-321'),
+(103, 'Ana', 'Reyes', 'Finance', 'Accountant', 35000.00, '555-666-777'),
+(104, 'Pedro', 'Cruz', 'HR', 'Payroll Officer', 40000.00, '222-333-444');
+
+
+CREATE VIEW Public_Employees_View AS
+SELECT employee_id, first_name, last_name, department, job_title
+FROM Employees;
+
+
+CREATE VIEW Payroll_View AS
+SELECT employee_id, first_name, last_name, salary, bank_account_number
+FROM Employees;
+
+
+
+After this setup:
+
+SELECT * FROM Public_Employees_View; → HR staff sees only safe info.
+
+SELECT * FROM Payroll_View; → Payroll sees salary + bank account.
