@@ -1,0 +1,54 @@
+CREATE TABLE student (
+    Studentid VARCHAR(50),
+    Firstname VARCHAR(50),
+    Lastname VARCHAR(50),
+    Lesson VARCHAR(50),
+    Age INT(11),
+    PassMark NUMERIC(5,2));
+
+DESC student;
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-001', 'John', 'Cena', 'Java Programming', 21 , 48.82);
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-002', 'Johnny', 'Bravo', 'PHP Programming', 20 , 18.38);
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-003', 'Janine', 'Abella', 'C++ Programming', 19 , 32.59);
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-004', 'Arian', 'Baccaro', 'PHP Programming', 19 , 81.11);
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-005', 'Adrian', 'Cadwell', 'Java Programming', 20 , 43.43);
+
+INSERT INTO student(Studentid, Firstname, Lastname, Lesson,Age, PassMark) VALUES ('2020-006', 'Adey', 'Cafasso', 'C# Programming', 24 , 56.15);
+
+
+SELECT * FROM student;
+
+DESC student;
+
+SELECT Firstname, Lastname FROM student;
+
+SELECT Studentid FROM Student;
+
+SELECT * FROM Student WHERE Age >= 20;
+
+SELECT * FROM Student WHERE Firstname LIKE 'J%';
+
+SELECT * FROM Student WHERE Lesson = 'PHP Programming';
+
+SELECT * FROM Student WHERE Lesson = 'Java Programming';
+
+SELECT * FROM Student WHERE Lesson = 'Java Programming' OR 'PHP Programming';
+
+SELECT * FROM Student WHERE Lesson = 'Java Programming' OR Lesson = 'PHP Programming';
+
+SELECT * FROM Student WHERE PassMark BETWEEN 40 AND 60;
+
+SELECT * FROM Student ORDER BY PassMark DESC;
+
+SELECT DISTINCT Lesson FROM Student;
+
+SELECT Firstname, Lastname FROM Student WHERE Age BETWEEN 21 AND 24;
+
+SELECT Firstname, Age FROM Student WHERE Lesson = 'Java Programming' OR Lesson = 'PHP Programming' ORDER BY Age DESC;
+
+SELECT * FROM Student WHERE PassMark > 30 AND PassMark <= 40;
