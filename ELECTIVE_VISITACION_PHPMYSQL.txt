@@ -1,0 +1,102 @@
+CREATE DATABASE IF NOT EXISTS techstore_db;
+USE techstore_db;
+
+CREATE TABLE TechSales_UNF (
+    sale_id INT PRIMARY KEY,
+    customer_id INT,
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(100),
+    product_serial VARCHAR(30),
+    product_name VARCHAR(200),
+    product_brand VARCHAR(100),
+    supplier_name VARCHAR(100),
+    sale_date DATE,
+    quantity INT,
+    price DECIMAL(10,2)
+);
+
+INSERT INTO TechSales_UNF (sale_id, customer_id, customer_name, customer_email, product_serial, product_name, product_brand, supplier_name, sale_date, quantity, price) VALUES
+(1, 101, 'Redjan', 'redjan@email.com', 'LAP-123456', 'Laptop Pro 15', 'TechVision', 'RPSV Electronics', '2025-09-02', 1, 54999.00),
+(2, 102, 'Jay Sean', 'jaysean@email.com', 'PHN-456789', 'Smartphone X', 'NovaTech', 'DigitalWorld', '2025-09-03', 2, 50730.00),
+(3, 101, 'Christian', 'christian@email.com', 'TAB-789012', 'Android Tablet', 'SkyTech', 'GadgetHub', '2025-09-04', 2, 21999.00),
+(4, 103, 'Von Jushua', 'von@email.com', 'HED-321654', 'Wireless Headset', 'AudioMax', 'TechZone', '2025-09-05', 1, 5561.00);
+
+CREATE TABLE Customers_Tech (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(100)
+);
+
+CREATE TABLE Suppliers_Tech (
+    supplier_id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_name VARCHAR(100) UNIQUE
+);
+
+CREATE TABLE Products_Tech (
+    product_serial VARCHAR(30) PRIMARY KEY,
+    product_name VARCHAR(255),
+    product_brand VARCHAR(255),
+    supplier_id INT,
+    FOREIGN KEY (supplier_id) REFERENCES Suppliers_Tech(supplier_id)
+);
+
+CREATE TABLE Sales_Tech_Normalized (
+    sale_id INT PRIMARY KEY,
+    customer_id INT,
+    product_serial VARCHAR(30),
+    sale_date DATE,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (customer_id) REFERENCES Customers_Tech(customer_id),
+    FOREIGN KEY (product_serial) REFERENCES Products_Tech(product_serial)
+);
+
+INSERT INTO Customers_Tech (customer_id, customer_name, customer_email)
+SELECT customer_id, customer_name, customer_email
+FROM TechSales_UNF
+GROUP BY customer_id, customer_name, customer_email;
+
+INSERT INTO Suppliers_Tech (supplier_name)
+SELECT DISTINCT supplier_name
+FROM TechSales_UNF;
+
+INSERT INTO Products_Tech (product_serial, product_name, product_brand, supplier_id)
+SELECT DISTINCT t.product_serial, t.product_name, t.product_brand, s.supplier_id
+FROM TechSales_UNF t
+JOIN Suppliers_Tech s ON t.supplier_name = s.supplier_name;
+
+INSERT INTO Sales_Tech_Normalized (sale_id, customer_id, product_serial, sale_date, quantity, price)
+SELECT sale_id, customer_id, product_serial, sale_date, quantity, price
+FROM TechSales_UNF;
+
+CREATE TABLE Sales_Recent_Tech (
+    sale_id INT PRIMARY KEY,
+    customer_id INT,
+    product_serial VARCHAR(30),
+    sale_date DATE,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (customer_id) REFERENCES Customers_Tech(customer_id),
+    FOREIGN KEY (product_serial) REFERENCES Products_Tech(product_serial)
+);
+
+CREATE TABLE Sales_Historical_Tech (
+    sale_id INT PRIMARY KEY,
+    customer_id INT,
+    product_serial VARCHAR(30),
+    sale_date DATE,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (customer_id) REFERENCES Customers_Tech(customer_id),
+    FOREIGN KEY (product_serial) REFERENCES Products_Tech(product_serial)
+);
+
+INSERT INTO Sales_Recent_Tech
+SELECT * FROM Sales_Tech_Normalized
+WHERE sale_date > DATE_SUB(CURDATE(), INTERVAL 30 DAY);
+
+INSERT INTO Sales_Historical_Tech
+SELECT * FROM Sales_Tech_Normalized
+WHERE sale_date <= DATE_SUB(CURDATE(), INTERVAL 30 DAY);
+
+CREATE DATABASE techstore_replica_1 TEMPLATE techstore_db;
